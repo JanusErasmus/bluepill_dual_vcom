@@ -91,6 +91,8 @@ int main(void)
   MX_GPIO_Init();
   MX_USB_DEVICE_Init();
   MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
+  MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
   uint8_t  buff[] = {"hello\n246"};
 
@@ -102,12 +104,6 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  printf("0:%s\n", ( CDC_Transmit_FS(buff, 7, 0) == USBD_OK )?"OK":"!");
-
-
-	  HAL_Delay(200);
-	  printf("2:%s\n", ( CDC_Transmit_FS(buff, 8, 2) == USBD_OK )?"OK":"!");
-	  HAL_Delay(2000);
 
     /* USER CODE BEGIN 3 */
   }
