@@ -20,12 +20,14 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include "usbd_cdc_if.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -88,8 +90,11 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USB_DEVICE_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  uint8_t  buff[] = {"hello\n246"};
 
+  printf("Multi virtual com\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -97,6 +102,12 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+	  printf("0:%s\n", ( CDC_Transmit_FS(buff, 7, 0) == USBD_OK )?"OK":"!");
+
+
+	  HAL_Delay(200);
+	  printf("2:%s\n", ( CDC_Transmit_FS(buff, 8, 2) == USBD_OK )?"OK":"!");
+	  HAL_Delay(2000);
 
     /* USER CODE BEGIN 3 */
   }
@@ -149,6 +160,38 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+#ifdef __GNUC__
+/* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
+ set to 'Yes') calls __io_putchar() */
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
+
+/**
+ * @brief Retargets the C library printf function to the USART.
+ * @param None
+ * @retval None
+ */
+PUTCHAR_PROTOTYPE
+{
+  if(ch == '\n')
+  {
+    uint8_t cr = '\r';
+    HAL_UART_Transmit(&huart1, &cr, 1, 0xFFFF);
+  }
+
+  if(ch == '\r')
+  {
+    uint8_t cr = '\n';
+    HAL_UART_Transmit(&huart1, &cr, 1, 0xFFFF);
+  }
+
+
+ HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 0xFFFF);
+
+return ch;
+}
 /* USER CODE END 4 */
 
 /**

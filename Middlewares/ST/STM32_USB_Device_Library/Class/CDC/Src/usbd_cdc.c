@@ -578,14 +578,26 @@ static uint8_t  USBD_CDC_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
     /* Open EP IN */
     USBD_LL_OpenEP(pdev, CDC_IN_EP, USBD_EP_TYPE_BULK,
                    CDC_DATA_HS_IN_PACKET_SIZE);
-
     pdev->ep_in[CDC_IN_EP & 0xFU].is_used = 1U;
 
     /* Open EP OUT */
     USBD_LL_OpenEP(pdev, CDC_OUT_EP, USBD_EP_TYPE_BULK,
                    CDC_DATA_HS_OUT_PACKET_SIZE);
-
     pdev->ep_out[CDC_OUT_EP & 0xFU].is_used = 1U;
+
+    /* Open EP IN */
+    USBD_LL_OpenEP(pdev,
+                   CDC_IN_EP+2,
+                   USBD_EP_TYPE_BULK,
+                   CDC_DATA_HS_IN_PACKET_SIZE);
+    pdev->ep_in[(CDC_IN_EP+2) & 0xFU].is_used = 1U;
+
+    /* Open EP OUT */
+    USBD_LL_OpenEP(pdev,
+                   CDC_OUT_EP+2,
+                   USBD_EP_TYPE_BULK,
+                   CDC_DATA_HS_OUT_PACKET_SIZE);
+    pdev->ep_out[(CDC_OUT_EP+2) & 0xFU].is_used = 1U;
 
   }
   else
@@ -593,18 +605,38 @@ static uint8_t  USBD_CDC_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
     /* Open EP IN */
     USBD_LL_OpenEP(pdev, CDC_IN_EP, USBD_EP_TYPE_BULK,
                    CDC_DATA_FS_IN_PACKET_SIZE);
-
     pdev->ep_in[CDC_IN_EP & 0xFU].is_used = 1U;
 
     /* Open EP OUT */
     USBD_LL_OpenEP(pdev, CDC_OUT_EP, USBD_EP_TYPE_BULK,
                    CDC_DATA_FS_OUT_PACKET_SIZE);
-
     pdev->ep_out[CDC_OUT_EP & 0xFU].is_used = 1U;
+
+    /* Open EP IN */
+    USBD_LL_OpenEP(pdev,
+                   CDC_IN_EP+2,
+                   USBD_EP_TYPE_BULK,
+                   CDC_DATA_FS_IN_PACKET_SIZE);
+    pdev->ep_in[(CDC_IN_EP+2) & 0xFU].is_used = 1U;
+
+    /* Open EP OUT */
+    USBD_LL_OpenEP(pdev,
+                   CDC_OUT_EP+2,
+                   USBD_EP_TYPE_BULK,
+                   CDC_DATA_FS_OUT_PACKET_SIZE);
+    pdev->ep_out[(CDC_OUT_EP+2) & 0xFU].is_used = 1U;
+
   }
   /* Open Command IN EP */
   USBD_LL_OpenEP(pdev, CDC_CMD_EP, USBD_EP_TYPE_INTR, CDC_CMD_PACKET_SIZE);
   pdev->ep_in[CDC_CMD_EP & 0xFU].is_used = 1U;
+
+  /* Open Command IN EP */
+  USBD_LL_OpenEP(pdev,
+                 CDC_CMD_EP+2,
+                 USBD_EP_TYPE_INTR,
+                 CDC_CMD_PACKET_SIZE);
+  pdev->ep_in[(CDC_CMD_EP+2) & 0xFU].is_used = 1U;
 
   pdev->pClassData = USBD_malloc(sizeof(USBD_CDC_HandleTypeDef));
 
@@ -628,11 +660,21 @@ static uint8_t  USBD_CDC_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
       /* Prepare Out endpoint to receive next packet */
       USBD_LL_PrepareReceive(pdev, CDC_OUT_EP, hcdc->RxBuffer,
                              CDC_DATA_HS_OUT_PACKET_SIZE);
+      /* Prepare Out endpoint to receive next packet */
+      USBD_LL_PrepareReceive(pdev,
+                             CDC_OUT_EP+2,
+                             hcdc->RxBuffer,
+                             CDC_DATA_HS_OUT_PACKET_SIZE);
     }
     else
     {
       /* Prepare Out endpoint to receive next packet */
       USBD_LL_PrepareReceive(pdev, CDC_OUT_EP, hcdc->RxBuffer,
+                             CDC_DATA_FS_OUT_PACKET_SIZE);
+      /* Prepare Out endpoint to receive next packet */
+      USBD_LL_PrepareReceive(pdev,
+                             CDC_OUT_EP+2,
+                             hcdc->RxBuffer,
                              CDC_DATA_FS_OUT_PACKET_SIZE);
     }
   }
